@@ -22,13 +22,13 @@ services:
       context: .
       dockerfile: Dockerfile
       target: heimdall
-    expose:
-      - 26657
+    ports:
+      - 26657:26657
     volumes:
       - /data/heimdalld:/data
     command:
       - start
-    # restart: on-failure
+    restart: unless-stopped
     logging:
       driver: "json-file"
       options:
@@ -46,7 +46,7 @@ services:
       - /data/heimdalld:/data
     command:
       - rest-server
-    # restart: on-failure
+    # restart: unless-stopped
     logging:
       driver: "json-file"
       options:
