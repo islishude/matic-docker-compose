@@ -10,7 +10,7 @@ services:
     volumes:
       - /data/rabbitmq:/var/lib/rabbitmq
     expose:
-      - 5672:5672
+      - 5672
     logging:
       driver: "json-file"
       options:
