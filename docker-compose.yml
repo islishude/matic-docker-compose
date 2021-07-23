@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.9-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: "maticnetwork"
+      RABBITMQ_DEFAULT_PASS: "maticnetwork"
+    volumes:
+      - /data/rabbitmq:/var/lib/rabbitmq
+    expose:
+      - 5672:5672
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+
+  heimdalld:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: heimdalld
+    expose:
+      - 26657
+    volumes:
+      - /data/heimdalld:/data
+    command:
+      - start
+    # restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+
+  restserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: heimdalld
+    ports:
+      - 1317:1317
+    volumes:
+      - /data/heimdalld:/data
+    command:
+      - rest-server
+    # restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
+
+  bor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bor
+    ports:
+      - "30003:30003"
+      - "8545:8545"
+    volumes:
+      - /data/bor:/data
+    # restart: on-failure
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "5"
