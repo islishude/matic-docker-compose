@@ -21,10 +21,10 @@ eth_rpc_url = "${ETH_RPC_URL}"
 bor_rpc_url = "http://bor:8545"
 
 # RPC endpoint for tendermint
-tendermint_rpc_url = "http://0.0.0.0:26657"
+tendermint_rpc_url = "http://heimdalld:26657"
 
 # Heimdall REST server endpoint
-heimdall_rest_server = "http://0.0.0.0:1317"
+heimdall_rest_server = "http://restserver:1317"
 
 #### Bridge configs ####
 
