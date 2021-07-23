@@ -256,9 +256,6 @@ pex = true
 # Does not work if the peer-exchange reactor is disabled.
 seed_mode = false
 
-# Comma separated list of peer IDs to keep private (will not be gossiped to other peers)
-private_peer_ids = ""
-
 # Toggle to disable guard against peers connecting from the same ip.
 allow_duplicate_ip = false
 
