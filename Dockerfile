@@ -1,5 +1,4 @@
 FROM golang:1.16.6-buster as builder
-RUN apk add --no-cache gcc musl-dev linux-headers git make
 RUN apt-get update && apt-get install -y build-essential git
 WORKDIR /bor
 RUN git clone --branch v0.2.6 --depth 1 https://github.com/maticnetwork/bor .
