@@ -13,7 +13,7 @@ fi
 
 if [[ ! -f $DATA_DIR/key.txt ]]; then
     head -c 16 /dev/urandom | base64 >$DATA_DIR/key.txt
-    ADDRESS=$(bor account new --datadir $DATA_DIR --password $DATA_DIR/key.txt 2>/dev/null | awk -v FS="({|})" '{print $2}')
+    ADDRESS=$(bor account new --datadir $DATA_DIR --password $DATA_DIR/key.txt 2>/dev/null | awk -v FS=':' 'NR==4 {print $2}' | sed -e 's/[[:space:]]*//')
 else
     ADDRESS=$(bor account list --datadir $DATA_DIR 2>/dev/null | head -n 1 | awk -v FS="({|})" '{print $2}')
 fi
