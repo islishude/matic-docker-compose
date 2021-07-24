@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 export DATA_HOME=/data
 
