@@ -9,15 +9,16 @@ if [[ ! -d $BOR_DIR ]]; then
     bor init --datadir $DATA_DIR genesis.json
     rm genesis.json
 
-    bootnode -genkey $BOR_DIR/nodekey
+    bootnode -genkey $BOR_DIR/nodekey -writeaddress
 fi
 
-KEY_FILE_PATH="$DATA_DIR/key.txt"
-if [[ ! -f $KEY_FILE_PATH ]]; then
-    head -c 16 /dev/urandom | base64 >$KEY_FILE_PATH
-    ADDRESS=$(bor account new --datadir $DATA_DIR --password $KEY_FILE_PATH | grep -o '0x[0-9a-zA-Z]\{40\}')
-else
-    ADDRESS=$(bor account list --datadir $DATA_DIR | grep -o '{[0-9a-zA-Z]\{40\}}' | head -n 1)
+ADDRESS=$(bor account list --datadir $DATA_DIR | grep -o '[0-9a-zA-Z]\{40\}' | head -n 1)
+if [[ -z $ADDRESS ]]; then
+    KEY_FILE_PATH="$DATA_DIR/key.txt"
+    if [[ ! -f $KEY_FILE_PATH ]]; then
+        head -c 16 /dev/urandom | base64 >$KEY_FILE_PATH
+        ADDRESS=$(bor account new --datadir $DATA_DIR --password $KEY_FILE_PATH | grep -o '0x[0-9a-zA-Z]\{40\}')
+    fi
 fi
 
 echo "Coinbase address is ${ADDRESS}"
@@ -30,6 +31,7 @@ exec bor --datadir $DATA_DIR \
     --http.port 8545 \
     --http.api 'eth,net,web3,txpool,bor' \
     --syncmode 'full' \
+    --snapshot=false \
     --networkid '137' \
     --mine \
     --miner.gaslimit '20000000' \

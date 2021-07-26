@@ -15,7 +15,7 @@ cat >$DATA_HOME/config/heimdall-config.toml <<EOF
 ##### RPC and REST configs #####
 
 # RPC endpoint for ethereum chain
-eth_rpc_url = "${ETH_RPC_URL}"
+eth_rpc_url = "${ETH_RPC_URL:-https://mainnet.infura.io/v3/5fe41449643c4ba48953a97f19898ca1}"
 
 # RPC endpoint for bor chain
 bor_rpc_url = "http://bor:8545"
@@ -47,7 +47,7 @@ EOF
 
 private_peer_ids=$(heimdalld tendermint show-node-id)
 
-cat >$DATA_HOME/config/app.toml <<EOF
+cat >$DATA_HOME/config/config.toml <<EOF
 # This is a TOML config file.
 # For more information, see https://github.com/toml-lang/toml
 
@@ -122,7 +122,7 @@ filter_peers = false
 [rpc]
 
 # TCP or UNIX socket address for the RPC server to listen on
-laddr = "tcp://127.0.0.1:26657"
+laddr = "tcp://0.0.0.0:26657"
 
 # A list of origins a cross-domain request can be executed from
 # Default value '[]' disables cors support
@@ -220,7 +220,7 @@ seeds="f4f605d60b8ffaaf15240564e58a81103510631c@159.203.9.164:26656,4fb1bc820088
 private_peer_ids="${private_peer_ids}"
 
 # UPNP port forwarding
-upnp = false
+upnp = true
 
 # Path to address book
 addr_book_file = "config/addrbook.json"
@@ -359,7 +359,7 @@ prometheus_listen_addr = ":26660"
 # If you want to accept a larger number than the default, make sure
 # you increase your OS limits.
 # 0 - unlimited.
-max_open_connections = 3
+max_open_connections = 100
 
 # Instrumentation namespace
 namespace = "tendermint"
