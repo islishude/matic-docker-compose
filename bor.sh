@@ -2,21 +2,26 @@
 
 set -ex
 
-export DATA_DIR=/data
-if [[ ! -d $DATA_DIR/bor ]]; then
+DATA_DIR=/data
+BOR_DIR="$DATA_DIR/bor"
+if [[ ! -d $BOR_DIR ]]; then
     wget -O genesis.json https://raw.githubusercontent.com/maticnetwork/launch/master/mainnet-v1/without-sentry/bor/genesis.json
     bor init --datadir $DATA_DIR genesis.json
     rm genesis.json
 
-    bootnode -genkey $DATA_DIR/bor/nodekey
+    bootnode -genkey $BOR_DIR/nodekey -writeaddress
 fi
 
-if [[ ! -f $DATA_DIR/key.txt ]]; then
-    head -c 16 /dev/urandom | base64 >$DATA_DIR/key.txt
-    ADDRESS=$(bor account --datadir $DATA_DIR new --password $DATA_DIR/key.txt 2>/dev/null | awk -v FS="({|})" '{print $2}')
-else
-    ADDRESS=$(bor account list --datadir $DATA_DIR 2>/dev/null | head -n 1 | awk -v FS="({|})" '{print $2}')
+ADDRESS=$(bor account list --datadir $DATA_DIR | grep -o '[0-9a-zA-Z]\{40\}' | head -n 1)
+if [[ -z $ADDRESS ]]; then
+    KEY_FILE_PATH="$DATA_DIR/key.txt"
+    if [[ ! -f $KEY_FILE_PATH ]]; then
+        head -c 16 /dev/urandom | base64 >$KEY_FILE_PATH
+        ADDRESS=$(bor account new --datadir $DATA_DIR --password $KEY_FILE_PATH | grep -o '0x[0-9a-zA-Z]\{40\}')
+    fi
 fi
+
+echo "Coinbase address is ${ADDRESS}"
 
 exec bor --datadir $DATA_DIR \
     --port 30303 \
@@ -26,6 +31,7 @@ exec bor --datadir $DATA_DIR \
     --http.port 8545 \
     --http.api 'eth,net,web3,txpool,bor' \
     --syncmode 'full' \
+    --snapshot=false \
     --networkid '137' \
     --mine \
     --miner.gaslimit '20000000' \
